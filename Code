@@ -1,0 +1,1256 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(const BizSparkApp());
+
+const Color navy = Color(0xFF061E4A);
+const Color blue = Color(0xFF0B3B8F);
+const Color cardBlue = Color(0xFF082A63);
+const Color orange = Color(0xFFFF7900);
+const Color lightText = Color(0xFFD5DFF3);
+
+class BizSparkApp extends StatelessWidget {
+  const BizSparkApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'BizSpark',
+      theme: ThemeData(
+        useMaterial3: true,
+        scaffoldBackgroundColor: blue,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: orange,
+          brightness: Brightness.dark,
+        ),
+      ),
+      home: const WelcomeScreen(),
+    );
+  }
+}
+
+class AppButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onTap;
+  final IconData? icon;
+
+  const AppButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 54,
+      child: ElevatedButton.icon(
+        onPressed: onTap,
+        icon: icon == null ? const SizedBox.shrink() : Icon(icon),
+        label: Text(
+          text,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: orange,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(9),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ScreenCard extends StatelessWidget {
+  final Widget child;
+
+  const ScreenCard({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 520),
+          padding: const EdgeInsets.all(25),
+          decoration: BoxDecoration(
+            color: navy,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black38,
+                blurRadius: 18,
+                offset: Offset(0, 8),
+              ),
+            ],
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class SectionTitle extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const SectionTitle({
+    super.key,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          subtitle,
+          style: const TextStyle(color: lightText, height: 1.4),
+        ),
+      ],
+    );
+  }
+}
+
+class AppField extends StatefulWidget {
+  final String label;
+  final String hint;
+  final bool password;
+  final int lines;
+  final TextEditingController controller;
+  final String? errorText;
+
+  const AppField({
+    super.key,
+    required this.label,
+    required this.controller,
+    this.hint = '',
+    this.password = false,
+    this.lines = 1,
+    this.errorText,
+  });
+
+  @override
+  State<AppField> createState() => _AppFieldState();
+}
+
+class _AppFieldState extends State<AppField> {
+  bool hidePassword = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 17),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(widget.label, style: const TextStyle(color: Colors.white)),
+          const SizedBox(height: 8),
+          TextField(
+            controller: widget.controller,
+            obscureText: widget.password ? hidePassword : false,
+            maxLines: widget.password ? 1 : widget.lines,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              errorText: widget.errorText,
+              errorStyle: const TextStyle(color: Color(0xFFFFB3B3)),
+              hintStyle: const TextStyle(color: Color(0xFFB4C5E7)),
+              filled: true,
+              fillColor: blue,
+              contentPadding: const EdgeInsets.all(15),
+              suffixIcon: widget.password
+                  ? IconButton(
+                      icon: Icon(
+                        hidePassword
+                            ? Icons.visibility_off_rounded
+                            : Icons.visibility_rounded,
+                        color: orange,
+                      ),
+                      onPressed: () {
+                        setState(() => hidePassword = !hidePassword);
+                      },
+                    )
+                  : null,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(9),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(9),
+                borderSide: const BorderSide(color: Color(0xFF315B9E)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(9),
+                borderSide: const BorderSide(color: orange, width: 2),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ProfileOption extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const ProfileOption({
+    super.key,
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: navy,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: orange),
+        title: Text(text, style: const TextStyle(color: Colors.white)),
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          color: lightText,
+          size: 17,
+        ),
+      ),
+    );
+  }
+}
+
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Welcome to',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 39,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Text(
+                'BizSpark',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: orange,
+                  fontSize: 42,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Your AI co-pilot for turning brilliant ideas into successful startups. Connect, create, and innovate.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: lightText, fontSize: 17, height: 1.5),
+              ),
+              const SizedBox(height: 42),
+              Center(
+                child: SizedBox(
+                  width: 190,
+                  child: AppButton(
+                    text: 'Get Started',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 85),
+              const Text(
+                'Terms & Conditions  |  Privacy Policy',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: lightText,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  bool isStudent = true;
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  String? emailError;
+
+  void login() {
+    if (!emailController.text.trim().endsWith('@gmail.com')) {
+      setState(() {
+        emailError = 'Enter a Gmail address ending with @gmail.com';
+      });
+      return;
+    }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            isStudent ? const StudentHomeScreen() : const InvestorHomeScreen(),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: ScreenCard(
+          child: Column(
+            children: [
+              const Text(
+                'Welcome Back',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 29,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "Let's get you started.",
+                style: TextStyle(color: lightText),
+              ),
+              const SizedBox(height: 28),
+              Row(
+                children: [
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Center(child: Text('Student')),
+                      selected: isStudent,
+                      selectedColor: orange,
+                      backgroundColor: blue,
+                      labelStyle: const TextStyle(color: Colors.white),
+                      onSelected: (_) => setState(() => isStudent = true),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Center(child: Text('Investor')),
+                      selected: !isStudent,
+                      selectedColor: orange,
+                      backgroundColor: blue,
+                      labelStyle: const TextStyle(color: Colors.white),
+                      onSelected: (_) => setState(() => isStudent = false),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 25),
+              AppField(
+                label: 'Gmail',
+                hint: 'example@gmail.com',
+                controller: emailController,
+                errorText: emailError,
+              ),
+              AppField(
+                label: 'Password',
+                password: true,
+                controller: passwordController,
+              ),
+              AppButton(text: 'Log In', onTap: login),
+              const SizedBox(height: 22),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Don't have an account? ",
+                    style: TextStyle(color: lightText),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SignUpScreen()),
+                      );
+                    },
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: orange,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  bool isStudent = true;
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  String? emailError;
+
+  void signUp() {
+    if (!emailController.text.trim().endsWith('@gmail.com')) {
+      setState(() {
+        emailError = 'Enter a Gmail address ending with @gmail.com';
+      });
+      return;
+    }
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProfileSetupScreen(isStudent: isStudent),
+      ),
+      (route) => false,
+    );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: ScreenCard(
+          child: Column(
+            children: [
+              const Text(
+                'Create Account',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 29,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "Let's get you started.",
+                style: TextStyle(color: lightText),
+              ),
+              const SizedBox(height: 28),
+              Row(
+                children: [
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Center(child: Text("I'm a Student")),
+                      selected: isStudent,
+                      selectedColor: orange,
+                      backgroundColor: blue,
+                      labelStyle: const TextStyle(color: Colors.white),
+                      onSelected: (_) => setState(() => isStudent = true),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Center(child: Text("I'm an Investor")),
+                      selected: !isStudent,
+                      selectedColor: orange,
+                      backgroundColor: blue,
+                      labelStyle: const TextStyle(color: Colors.white),
+                      onSelected: (_) => setState(() => isStudent = false),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 25),
+              AppField(
+                label: 'Gmail',
+                hint: 'example@gmail.com',
+                controller: emailController,
+                errorText: emailError,
+              ),
+              AppField(
+                label: 'Password',
+                password: true,
+                controller: passwordController,
+              ),
+              AppButton(text: 'Sign Up', onTap: signUp),
+              const SizedBox(height: 20),
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: const Text(
+                  'Already have an account? Log In',
+                  style: TextStyle(color: orange),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ProfileSetupScreen extends StatelessWidget {
+  final bool isStudent;
+
+  const ProfileSetupScreen({super.key, required this.isStudent});
+
+  @override
+  Widget build(BuildContext context) {
+    final nameController = TextEditingController();
+    final skillsController = TextEditingController();
+    final certificationController = TextEditingController();
+    final companyController = TextEditingController();
+    final qualificationController = TextEditingController();
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: navy,
+        foregroundColor: Colors.white,
+        title: const Text('Complete Profile'),
+      ),
+      body: SafeArea(
+        child: ScreenCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionTitle(
+                title: isStudent ? 'Student Profile' : 'Investor Profile',
+                subtitle:
+                    'This helps BizSpark recommend the best opportunities for you.',
+              ),
+              const SizedBox(height: 28),
+              AppField(
+                label: 'Full Name',
+                hint: 'Enter your name',
+                controller: nameController,
+              ),
+              if (isStudent) ...[
+                AppField(
+                  label: 'Skills & Expertise',
+                  hint: 'Example: Flutter, UI/UX, business',
+                  lines: 3,
+                  controller: skillsController,
+                ),
+                AppField(
+                  label: 'Certifications (Optional)',
+                  hint: 'Example: Google Cloud Certified',
+                  lines: 2,
+                  controller: certificationController,
+                ),
+              ] else ...[
+                AppField(
+                  label: 'Company',
+                  hint: 'Enter your company name',
+                  controller: companyController,
+                ),
+                AppField(
+                  label: 'Qualification',
+                  hint: 'Example: MBA, Finance, Business Management',
+                  lines: 2,
+                  controller: qualificationController,
+                ),
+              ],
+              AppButton(
+                text: 'Save Profile',
+                onTap: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => isStudent
+                          ? const StudentHomeScreen()
+                          : const InvestorHomeScreen(),
+                    ),
+                    (route) => false,
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class StudentHomeScreen extends StatefulWidget {
+  const StudentHomeScreen({super.key});
+
+  @override
+  State<StudentHomeScreen> createState() => _StudentHomeScreenState();
+}
+
+class _StudentHomeScreenState extends State<StudentHomeScreen> {
+  int selectedIndex = 0;
+
+  final pages = const [
+    StudentDashboard(),
+    IdeaGeneratorScreen(),
+    MentorScreen(),
+    StudentProfileScreen(),
+  ];
+
+  final titles = ['BizSpark', 'Idea Generator', 'Mentor Support', 'My Profile'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: navy,
+        foregroundColor: Colors.white,
+        title: Text(titles[selectedIndex]),
+      ),
+      body: pages[selectedIndex],
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: navy,
+        indicatorColor: orange,
+        selectedIndex: selectedIndex,
+        onDestinationSelected: (index) => setState(() => selectedIndex = index),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined, color: Colors.white),
+            selectedIcon: Icon(Icons.home, color: navy),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.auto_awesome_outlined, color: Colors.white),
+            selectedIcon: Icon(Icons.auto_awesome, color: navy),
+            label: 'Ideas',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.people_outline, color: Colors.white),
+            selectedIcon: Icon(Icons.people, color: navy),
+            label: 'Mentors',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline, color: Colors.white),
+            selectedIcon: Icon(Icons.person, color: navy),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class StudentDashboard extends StatelessWidget {
+  const StudentDashboard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const Text(
+          'Hello, Founder 👋',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 27,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Ready to build your next big startup idea?',
+          style: TextStyle(color: lightText, fontSize: 16),
+        ),
+        const SizedBox(height: 24),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: navy,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.auto_awesome, color: orange, size: 34),
+              SizedBox(height: 14),
+              Text(
+                'Generate your startup idea',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 21,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Tell us your skills and interests. BizSpark AI will suggest an idea for you.',
+                style: TextStyle(color: lightText, height: 1.4),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 25),
+        const Text(
+          'Your Progress',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 14),
+        const Row(
+          children: [
+            Expanded(child: ProgressCard(title: 'Ideas', value: '03')),
+            SizedBox(width: 10),
+            Expanded(child: ProgressCard(title: 'Mentors', value: '01')),
+            SizedBox(width: 10),
+            Expanded(child: ProgressCard(title: 'Projects', value: '00')),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class ProgressCard extends StatelessWidget {
+  final String title;
+  final String value;
+
+  const ProgressCard({super.key, required this.title, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 17),
+      decoration: BoxDecoration(
+        color: cardBlue,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              color: orange,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(title, style: const TextStyle(color: lightText, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+}
+
+class IdeaGeneratorScreen extends StatefulWidget {
+  const IdeaGeneratorScreen({super.key});
+
+  @override
+  State<IdeaGeneratorScreen> createState() => _IdeaGeneratorScreenState();
+}
+
+class _IdeaGeneratorScreenState extends State<IdeaGeneratorScreen> {
+  bool showIdea = false;
+  final skillsController = TextEditingController();
+  final interestsController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const SectionTitle(
+          title: 'Create an idea with AI',
+          subtitle: 'Add your skills and interests to get a startup idea.',
+        ),
+        const SizedBox(height: 25),
+        AppField(
+          label: 'Your Skills',
+          hint: 'Example: Flutter, Python, UI design',
+          lines: 3,
+          controller: skillsController,
+        ),
+        AppField(
+          label: 'Your Interests / Problems to Solve',
+          hint: 'Example: Education, health, student life',
+          lines: 3,
+          controller: interestsController,
+        ),
+        AppButton(
+          text: 'Generate Idea',
+          icon: Icons.auto_awesome,
+          onTap: () => setState(() => showIdea = true),
+        ),
+        if (showIdea) ...[
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: navy,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: orange),
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'CampusConnect AI',
+                  style: TextStyle(
+                    color: orange,
+                    fontSize: 21,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'A student platform that uses AI to match students with mentors, project teammates, and internship opportunities.',
+                  style: TextStyle(color: lightText, height: 1.5),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class MentorScreen extends StatelessWidget {
+  const MentorScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const SectionTitle(
+          title: 'Find a mentor',
+          subtitle: 'Get guidance and certification for your startup idea.',
+        ),
+        const SizedBox(height: 24),
+        const MentorCard(
+          name: 'Priya Sharma',
+          role: 'Product Manager • EdTech Mentor',
+          icon: Icons.school,
+        ),
+        const SizedBox(height: 14),
+        const MentorCard(
+          name: 'Rahul Verma',
+          role: 'Startup Founder • Business Mentor',
+          icon: Icons.business_center,
+        ),
+        const SizedBox(height: 14),
+        const MentorCard(
+          name: 'Anjali Reddy',
+          role: 'Flutter Developer • Tech Mentor',
+          icon: Icons.code,
+        ),
+      ],
+    );
+  }
+}
+
+class MentorCard extends StatelessWidget {
+  final String name;
+  final String role;
+  final IconData icon;
+
+  const MentorCard({
+    super.key,
+    required this.name,
+    required this.role,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: navy,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(14),
+        leading: CircleAvatar(
+          backgroundColor: orange,
+          child: Icon(icon, color: navy),
+        ),
+        title: Text(
+          name,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(role, style: const TextStyle(color: lightText)),
+        trailing: OutlinedButton(
+          onPressed: () {},
+          style: OutlinedButton.styleFrom(
+            foregroundColor: orange,
+            side: const BorderSide(color: orange),
+          ),
+          child: const Text('Connect'),
+        ),
+      ),
+    );
+  }
+}
+
+class StudentProfileScreen extends StatelessWidget {
+  const StudentProfileScreen({super.key});
+
+  void logout(BuildContext context) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const Center(
+          child: CircleAvatar(
+            radius: 45,
+            backgroundColor: orange,
+            child: Icon(Icons.person, color: navy, size: 50),
+          ),
+        ),
+        const SizedBox(height: 14),
+        const Center(
+          child: Text(
+            'Student Founder',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 23,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 5),
+        const Center(
+          child: Text(
+            'Build • Learn • Launch',
+            style: TextStyle(color: lightText),
+          ),
+        ),
+        const SizedBox(height: 28),
+        const ProfileOption(
+          icon: Icons.lightbulb_outline,
+          text: 'My Saved Ideas',
+        ),
+        const ProfileOption(
+          icon: Icons.folder_outlined,
+          text: 'My Projects',
+        ),
+        const ProfileOption(
+          icon: Icons.people_outline,
+          text: 'My Mentors',
+        ),
+        const ProfileOption(
+          icon: Icons.verified_outlined,
+          text: 'Mentor Certification',
+        ),
+        const ProfileOption(
+          icon: Icons.settings_outlined,
+          text: 'Settings',
+        ),
+        const SizedBox(height: 18),
+        OutlinedButton.icon(
+          onPressed: () => logout(context),
+          icon: const Icon(Icons.logout),
+          label: const Text('Log Out'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: orange,
+            side: const BorderSide(color: orange),
+            padding: const EdgeInsets.symmetric(vertical: 15),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class InvestorHomeScreen extends StatefulWidget {
+  const InvestorHomeScreen({super.key});
+
+  @override
+  State<InvestorHomeScreen> createState() => _InvestorHomeScreenState();
+}
+
+class _InvestorHomeScreenState extends State<InvestorHomeScreen> {
+  int selectedIndex = 0;
+
+  final pages = const [
+    InvestorDashboard(),
+    InvestorProfileScreen(),
+  ];
+
+  final titles = [
+    'Investor Dashboard',
+    'My Profile',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: navy,
+        foregroundColor: Colors.white,
+        title: Text(titles[selectedIndex]),
+      ),
+      body: pages[selectedIndex],
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: navy,
+        indicatorColor: orange,
+        selectedIndex: selectedIndex,
+        onDestinationSelected: (index) => setState(() => selectedIndex = index),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined, color: Colors.white),
+            selectedIcon: Icon(Icons.home, color: navy),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline, color: Colors.white),
+            selectedIcon: Icon(Icons.person, color: navy),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InvestorDashboard extends StatelessWidget {
+  const InvestorDashboard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const SectionTitle(
+          title: 'Discover student startups',
+          subtitle: 'Browse mentor-certified startup ideas from students.',
+        ),
+        const SizedBox(height: 24),
+        const InvestorIdeaCard(
+          title: 'Smart Study Planner',
+          category: 'EdTech • Certified',
+          description:
+              'AI-powered study planner that converts notes into quizzes and revision schedules.',
+        ),
+        const SizedBox(height: 14),
+        const InvestorIdeaCard(
+          title: 'FarmLink',
+          category: 'AgriTech • Certified',
+          description:
+              'A platform connecting local farmers directly with restaurants and consumers.',
+        ),
+        const SizedBox(height: 14),
+        const InvestorIdeaCard(
+          title: 'SafeRide Campus',
+          category: 'Safety • Certified',
+          description:
+              'A verified ride-sharing and safety platform for college campuses.',
+        ),
+      ],
+    );
+  }
+}
+
+class InvestorIdeaCard extends StatelessWidget {
+  final String title;
+  final String category;
+  final String description;
+
+  const InvestorIdeaCard({
+    super.key,
+    required this.title,
+    required this.category,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: navy,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Chip(
+            label: Text(category),
+            backgroundColor: orange,
+            labelStyle: const TextStyle(
+              color: navy,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 7),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            style: const TextStyle(color: lightText, height: 1.4),
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton(
+            onPressed: () {},
+            style: OutlinedButton.styleFrom(
+              foregroundColor: orange,
+              side: const BorderSide(color: orange),
+            ),
+            child: const Text('View Startup'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InvestorProfileScreen extends StatelessWidget {
+  const InvestorProfileScreen({super.key});
+
+  void logout(BuildContext context) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const Center(
+          child: CircleAvatar(
+            radius: 45,
+            backgroundColor: orange,
+            child: Icon(Icons.account_balance, color: navy, size: 46),
+          ),
+        ),
+        const SizedBox(height: 14),
+        const Center(
+          child: Text(
+            'Investor Profile',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 23,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 5),
+        const Center(
+          child: Text(
+            'Discover • Support • Grow',
+            style: TextStyle(color: lightText),
+          ),
+        ),
+        const SizedBox(height: 28),
+        const ProfileOption(
+          icon: Icons.bookmark_outline,
+          text: 'Saved Startups',
+        ),
+        const ProfileOption(
+          icon: Icons.account_balance_wallet_outlined,
+          text: 'My Investments',
+        ),
+        const ProfileOption(
+          icon: Icons.favorite_outline,
+          text: 'Interested Ideas',
+        ),
+        const ProfileOption(
+          icon: Icons.notifications_outlined,
+          text: 'Notifications',
+        ),
+        const ProfileOption(
+          icon: Icons.settings_outlined,
+          text: 'Settings',
+        ),
+        const SizedBox(height: 18),
+        OutlinedButton.icon(
+          onPressed: () => logout(context),
+          icon: const Icon(Icons.logout),
+          label: const Text('Log Out'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: orange,
+            side: const BorderSide(color: orange),
+            padding: const EdgeInsets.symmetric(vertical: 15),
+          ),
+        ),
+      ],
+    );
+  }
+}
